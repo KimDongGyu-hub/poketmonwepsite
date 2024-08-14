@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: rgb(237, 236, 241);
+    }
+    #search-container {
+      margin: 20px;
+    }
+    #pokemon-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pokemon-card {
+      width: 150px;
+      margin: 10px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 16px;
+      background-color: white;
+      box-shadow: 3px 3px 3px 3px rgb(207, 206, 206);
+    }
+    .pokemon-card img {
+      width: 100px;
+      height: 100px;
+    }
+    #pokemon-details {
+      margin-top: 30px;
+      display: none; /* 처음엔 숨김 */
+    }
+    #pokemon-details img {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+  <body>
+    <h1>포켓몬 도감</h1>
+    <div id="search-container">
+      <input
+        type="text"
+        id="pokemon-input"
+        placeholder="포켓몬 이름을 입력하세요"
+      />
+      <button id="search-button">검색</button>
+    </div>
+
+    <div id="pokemon-list"></div>
+
+    <div id="pokemon-details">
+      <h2 id="pokemon-name"></h2>
+      <img id="pokemon-image" src="" alt="포켓몬 이미지" />
+      <p id="pokemon-info"></p>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
