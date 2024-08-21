@@ -1,46 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>포켓몬 도감</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f2f2f2;
+      }
+      #search-container {
+        margin: 20px;
+      }
+      #pokemon-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .pokemon-card {
+        width: 150px;
+        margin: 10px;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 16px;
+        background-color: white;
+        box-shadow: 3px 3px 3px 3px rgb(207, 206, 206);
+      }
+      .pokemon-card img {
+        width: 100px;
+        height: 100px;
+      }
+      #modal {
+        display: none; /* 처음엔 숨김 */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      #modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        text-align: left;
+        border-radius: 10px;
+      }
+      #modal-close {
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
   </head>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: rgb(237, 236, 241);
-    }
-    #search-container {
-      margin: 20px;
-    }
-    #pokemon-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .pokemon-card {
-      width: 150px;
-      margin: 10px;
-      text-align: center;
-      cursor: pointer;
-      border-radius: 16px;
-      background-color: white;
-      box-shadow: 3px 3px 3px 3px rgb(207, 206, 206);
-    }
-    .pokemon-card img {
-      width: 100px;
-      height: 100px;
-    }
-    #pokemon-details {
-      margin-top: 30px;
-      display: none; /* 처음엔 숨김 */
-    }
-    #pokemon-details img {
-      width: 200px;
-      height: 200px;
-    }
-  </style>
   <body>
     <h1>포켓몬 도감</h1>
     <div id="search-container">
@@ -54,10 +73,15 @@
 
     <div id="pokemon-list"></div>
 
-    <div id="pokemon-details">
-      <h2 id="pokemon-name"></h2>
-      <img id="pokemon-image" src="" alt="포켓몬 이미지" />
-      <p id="pokemon-info"></p>
+    <!-- 모달 창 -->
+    <div id="modal">
+      <div id="modal-content">
+        <span id="modal-close">&times;</span>
+        <h2 id="pokemon-name"></h2>
+        <img id="pokemon-image" src="" alt="포켓몬 이미지" />
+        <p id="pokemon-info"></p>
+        <div id="pokemon-moves"></div>
+      </div>
     </div>
 
     <script src="script.js"></script>
