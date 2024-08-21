@@ -3,7 +3,7 @@
 // ==========================================
 const pokemonNameMap = {}; // 포켓몬 이름 매핑 객체
 let offset = 1; // 현재 로드된 포켓몬의 시작 번호
-const limit = 20; // 한 번에 로드할 포켓몬 수
+const limit = 50; // 한 번에 로드할 포켓몬 수 (초기 로드 속도 개선을 위해 증가)
 let isLoading = false; // 로딩 중인지 여부
 
 // ==========================================
@@ -11,7 +11,7 @@ let isLoading = false; // 로딩 중인지 여부
 // ==========================================
 window.addEventListener("load", async () => {
   await fetchPokemonNames(); // 포켓몬 이름 데이터를 가져옴
-  loadPokemon(); // 첫 번째 포켓몬들을 화면에 로드
+  loadPokemon(true); // 첫 번째 포켓몬들을 화면에 로드
 
   // 모달 닫기 버튼 클릭 이벤트 추가
   document.getElementById("modal-close").addEventListener("click", closeModal);
@@ -38,18 +38,13 @@ async function fetchPokemonNames() {
     const promises = data.results.map(async (pokemon, index) => {
       const res = await fetch(pokemon.url);
       const speciesData = await res.json();
-      const koreanEntry = speciesData.names.find(
-        (name) => name.language.name === "ko"
-      );
 
-      if (koreanEntry) {
-        const pokemonNumber = index + 1;
-        pokemonNameMap[koreanEntry.name] = {
-          englishName: speciesData.name,
-          number: pokemonNumber,
-          koreanName: koreanEntry.name,
-        };
-      }
+      const pokemonNumber = index + 1;
+      pokemonNameMap[pokemon.name] = {
+        englishName: speciesData.name,
+        number: pokemonNumber,
+        koreanName: speciesData.name, // 영어 이름 그대로 사용
+      };
     });
 
     // 모든 이름 데이터를 가져올 때까지 대기
@@ -60,14 +55,20 @@ async function fetchPokemonNames() {
 }
 
 // 초기 로드 시 기본 포켓몬 리스트를 가져와 화면에 표시하는 함수
-async function loadPokemon() {
+async function loadPokemon(reset = false) {
   if (isLoading) return; // 이미 로딩 중이면 중복 로딩 방지
   isLoading = true; // 로딩 상태 설정
 
   const pokemonListContainer = document.getElementById("pokemon-list");
 
+  if (reset) {
+    // 초기화 플래그가 true인 경우 리스트를 초기화하고 offset을 1로 설정
+    pokemonListContainer.innerHTML = "";
+    offset = 1;
+  }
+
   // 오프셋(offset)부터 limit만큼의 포켓몬 데이터를 가져옴
-  for (let i = offset; i < offset + limit && i <= 151; i++) {
+  for (let i = offset; i < offset + limit && i <= 1010; i++) {
     try {
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}`);
       const pokemonData = await response.json();
@@ -82,7 +83,7 @@ async function loadPokemon() {
       pokemonCard.setAttribute("data-name", pokemonData.name);
       pokemonCard.innerHTML = `
                 <img src="${pokemonData.sprites.front_default}" alt="${pokemonData.name}">
-                <p>#${pokemonNumber} ${koreanName}</p>
+                <p>#${pokemonNumber} ${pokemonData.name}</p>
             `;
 
       // 포켓몬 카드를 클릭하면 상세 정보를 표시
@@ -113,16 +114,18 @@ async function loadPokemon() {
 function filterPokemonList() {
   const searchInput = document.getElementById("pokemon-input").value.trim(); // 입력된 검색어
   const pokemonListContainer = document.getElementById("pokemon-list");
-  pokemonListContainer.innerHTML = ""; // 기존에 표시된 포켓몬 리스트 초기화
 
   if (searchInput === "") {
-    loadPokemon(); // 검색어가 없을 경우 기본 로드 수행
+    // 검색어가 비어 있으면 전체 포켓몬 리스트를 초기화하여 다시 로드
+    loadPokemon(true);
     return;
   }
 
+  pokemonListContainer.innerHTML = ""; // 기존에 표시된 포켓몬 리스트 초기화
+
   // 검색어가 포함된 포켓몬만 필터링
   const filteredPokemon = Object.values(pokemonNameMap).filter((pokemon) =>
-    pokemon.koreanName.includes(searchInput)
+    pokemon.englishName.includes(searchInput)
   );
 
   // 필터링된 포켓몬들을 화면에 출력
@@ -131,8 +134,8 @@ function filterPokemonList() {
     pokemonCard.classList.add("pokemon-card");
     pokemonCard.setAttribute("data-name", pokemon.englishName);
     pokemonCard.innerHTML = `
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.number}.png" alt="${pokemon.koreanName}">
-                <p>#${pokemon.number} ${pokemon.koreanName}</p>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.number}.png" alt="${pokemon.englishName}">
+                <p>#${pokemon.number} ${pokemon.englishName}</p>
             `;
     pokemonCard.addEventListener("click", () => {
       openPokemonDetails(pokemon.englishName);
@@ -181,40 +184,10 @@ async function openPokemonDetails(name) {
 
 // 포켓몬의 상세 정보를 모달 창에 표시하는 함수
 async function displayPokemonDetails(data) {
-  const pokemonNameMap = {
-    bulbasaur: "이상해씨",
-    pikachu: "피카츄",
-    charmander: "파이리",
-    // 여기에 더 많은 이름 매핑을 추가할 수 있습니다.
-  };
-
-  const typeMap = {
-    normal: "노말",
-    fire: "불꽃",
-    water: "물",
-    grass: "풀",
-    electric: "전기",
-    ice: "얼음",
-    fighting: "격투",
-    poison: "독",
-    ground: "땅",
-    flying: "비행",
-    psychic: "에스퍼",
-    bug: "벌레",
-    rock: "바위",
-    ghost: "고스트",
-    dragon: "드래곤",
-    dark: "악",
-    steel: "강철",
-    fairy: "페어리",
-    // 필요한 다른 타입들을 추가
-  };
-
-  const koreanName = pokemonNameMap[data.name] || data.name.toUpperCase();
   const pokemonNumber = data.id;
   const pokemonImage = data.sprites.front_default;
   const pokemonTypes = data.types
-    .map((typeInfo) => typeMap[typeInfo.type.name] || typeInfo.type.name)
+    .map((typeInfo) => typeInfo.type.name) // 영어 타입 그대로 사용
     .join(", ");
   const pokemonHeight = data.height / 10;
   const pokemonWeight = data.weight / 10;
@@ -222,11 +195,11 @@ async function displayPokemonDetails(data) {
   // 모달 창에 포켓몬의 기본 정보 출력
   document.getElementById(
     "pokemon-name"
-  ).innerText = `#${pokemonNumber} ${koreanName}`;
+  ).innerText = `#${pokemonNumber} ${data.name}`;
   document.getElementById("pokemon-image").src = pokemonImage;
   document.getElementById(
     "pokemon-info"
-  ).innerText = `타입: ${pokemonTypes}\n높이: ${pokemonHeight}m\n무게: ${pokemonWeight}kg`;
+  ).innerText = `Type: ${pokemonTypes}\nHeight: ${pokemonHeight}m\nWeight: ${pokemonWeight}kg`;
 
   // 포켓몬의 사용 가능한 기술 정보를 가져와 모달에 출력
   await fetchPokemonMoves(data.moves);
@@ -243,7 +216,7 @@ async function displayPokemonDetails(data) {
 async function fetchPokemonMoves(moves) {
   const moveListElement = document.getElementById("pokemon-moves");
   moveListElement.innerHTML = ""; // 기존 리스트 초기화
-  moveListElement.innerHTML = "<h3>사용 가능한 기술:</h3>";
+  moveListElement.innerHTML = "<h3>Available Moves:</h3>";
 
   // 중복된 기술을 제거하기 위해 Map 사용
   const uniqueMoves = new Map();
@@ -254,7 +227,7 @@ async function fetchPokemonMoves(moves) {
     const response = await fetch(moveUrl);
     const moveData = await response.json();
 
-    const koreanMoveName = await getKoreanMoveName(moveData.names);
+    const moveName = moveData.name; // 영어 이름 그대로 사용
     const levelLearnedAt = move.version_group_details.find(
       (detail) =>
         detail.version_group.name === "sword-shield" &&
@@ -263,24 +236,18 @@ async function fetchPokemonMoves(moves) {
 
     // 99레벨 이하의 중복되지 않은 기술만 추가
     if (levelLearnedAt !== undefined && levelLearnedAt <= 99) {
-      uniqueMoves.set(koreanMoveName, levelLearnedAt);
+      uniqueMoves.set(moveName, levelLearnedAt);
     }
   }
 
   // 레벨 순서대로 정렬 후 출력
   [...uniqueMoves.entries()]
     .sort((a, b) => a[1] - b[1])
-    .forEach(([koreanMoveName, levelLearnedAt]) => {
+    .forEach(([moveName, levelLearnedAt]) => {
       const listItem = document.createElement("p");
-      listItem.innerText = `레벨 ${levelLearnedAt}: ${koreanMoveName}`;
+      listItem.innerText = `Level ${levelLearnedAt}: ${moveName}`;
       moveListElement.appendChild(listItem);
     });
-}
-
-// PokeAPI에서 기술의 한글 이름을 가져오는 함수
-async function getKoreanMoveName(names) {
-  const koreanNameEntry = names.find((name) => name.language.name === "ko");
-  return koreanNameEntry ? koreanNameEntry.name : "알 수 없는 기술";
 }
 
 // ==========================================
