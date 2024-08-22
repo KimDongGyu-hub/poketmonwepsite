@@ -67,6 +67,7 @@ function loadPokemonFromStorage() {
   pokemonListContainer.innerHTML = ""; // 기존에 표시된 포켓몬 리스트 초기화
 
   Object.values(pokemonNameMap).forEach((pokemon) => {
+    console.log(pokemon.number);
     const pokemonCard = document.createElement("div");
     pokemonCard.classList.add("pokemon-card");
     pokemonCard.setAttribute("data-name", pokemon.englishName);
