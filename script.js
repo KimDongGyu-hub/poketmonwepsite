@@ -184,7 +184,7 @@ async function fetchPokemonMoves(moves) {
 }
 
 // ==========================================
-// 모달 창 제어
+// 모달 창 제어 살려줘
 // ==========================================
 function openModal() {
   document.getElementById("modal").style.display = "block";
