@@ -147,7 +147,7 @@ function displayPokemonDetails(data) {
   fetchPokemonMoves(data.moves);
   openModal();
 }
-
+/* 제발해줘 해줘 제발*/
 // ==========================================
 // 포켓몬 기술 정보 표시
 // ==========================================
