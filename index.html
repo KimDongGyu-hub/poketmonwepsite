@@ -4,6 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>포켓몬 도감</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"
+    />
+
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -58,9 +69,38 @@
         font-weight: bold;
         cursor: pointer;
       }
+
+      .slide {
+        width: 10%;
+        margin: 0 auto;
+      }
     </style>
   </head>
-  <body>
+  <body style="background-color: burlywood">
+    <div class="slide">
+      <img src="img/1.png" alt="사진" />
+      <img src="img/2.png" alt="사진" />
+      <img src="img/3.png" alt="사진" />
+      <img src="img/4.png" alt="사진" />
+      <img src="img/5.png" alt="사진" />
+      <img src="img/6.png" alt="사진" />
+      <img src="img/7.png" alt="사진" />
+      <img src="img/8.png" alt="사진" />
+      <img src="img/9.png" alt="사진" />
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"
+    ></script>
+    <script>
+      $(".slide").slick({
+        infinite: true,
+        autoplay: true,
+        autoplaySpeed: 1000,
+      });
+    </script>
+
     <h1>포켓몬 도감</h1>
     <div id="search-container">
       <input
