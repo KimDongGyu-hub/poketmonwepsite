@@ -4,6 +4,7 @@
 const pokemonNameMap = {}; // 포켓몬 이름 매핑 객체
 let offset = 1; // 현재 로드된 포켓몬의 시작 번호
 const limit = 50; // 한 번에 로드할 포켓몬 수 (초기 로드 속도 개선을 위해 증가)
+const maxPokemon = 493; // 4세대 포켓몬의 최대 번호 (493번까지)
 let isLoading = false; // 로딩 중인지 여부
 
 // ==========================================
@@ -28,7 +29,7 @@ document
 
 // PokeAPI에서 포켓몬 이름과 번호 데이터를 가져와서 저장하는 함수
 async function fetchPokemonNames() {
-  const speciesUrl = "https://pokeapi.co/api/v2/pokemon-species?limit=1010";
+  const speciesUrl = `https://pokeapi.co/api/v2/pokemon-species?limit=${maxPokemon}`;
 
   try {
     const response = await fetch(speciesUrl);
@@ -68,7 +69,7 @@ async function loadPokemon(reset = false) {
   }
 
   // 오프셋(offset)부터 limit만큼의 포켓몬 데이터를 가져옴
-  for (let i = offset; i < offset + limit && i <= 1010; i++) {
+  for (let i = offset; i < offset + limit && i <= maxPokemon; i++) {
     try {
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}`);
       const pokemonData = await response.json();
@@ -101,7 +102,7 @@ async function loadPokemon(reset = false) {
   isLoading = false; // 로딩 상태 해제
 
   // 마지막 포켓몬이 로드되면 다음 로드를 준비
-  if (offset <= 1010) {
+  if (offset <= maxPokemon) {
     observeLastPokemon();
   }
 }
